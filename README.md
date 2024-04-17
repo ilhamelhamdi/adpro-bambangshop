@@ -84,7 +84,7 @@ This is the place for you to write reflections:
 
 #### Reflection Publisher-1
 
-1.  <h5> Observer Pattern </h5>
+1.  #####  Observer Pattern 
     > In the Observer pattern diagram explained by the Head First Design Pattern book, Subscriber is defined as an interface. Explain based on your understanding of Observer design patterns, do we still need an interface (or trait in Rust) in this BambangShop case, or a single Model struct is enough?
 
     _Observer design pattern_ memberikan solusi standar untuk problem umum seperti sistem notifikasi atau sistem lainnya yang melibatkan adanya observer/subscriber dan subject/publisher. Berikut merupakan definisi berdasarkan buku Head First Design Pattern book.
@@ -104,14 +104,14 @@ This is the place for you to write reflections:
 
     Pada kasus ini, entitas yang mengikuti Observer pattern dipisahkan oleh aplikasi yang berbeda. Aplikasi ini berperan sebagai Publisher. Untuk memberikan notifikasi kepada Subscriber di aplikasi lain, kita dapat berkomunikasi melalui _network protocol_ seperti HTTP. Untuk itu, kita perlu menyimpan URL dari aplikasi subscribers di aplikasi publisher. Komunikasi melalui URL juga dapat mengganti pemanggilan method `update` pada diagram di atas. Hal ini karena keduanya sama sama bertujuan untuk memberikan notifikasi kepada Subscriber. Jadi, interface/trait untuk struct Subscriber tidak diperlukan.
 
-2. <h5>Vec (list) or DashMap (Map)?</h5> 
+2. ##### Vec (list) or DashMap (Map)? 
     > id in Program and url in Subscriber is intended to be unique. Explain based on your understanding, is using Vec (list) sufficient or using DashMap (map/dictionary) like we currently use is necessary for this case?
 
     Pada implementasi `ProductRepository` dan `SubscriberRepository`, kita menggunakan DashMap untuk menyimpan data. Pada `ProductRepository`, key-nya adalah id<usize>. Sedangkan pada `SubscriberRepository`, terdapat dua level Dashmap. Outer level-nya menggunakan _product\_type_ sebagai key dan inner level-nya menggunakan _url_ sebagai key. 
     
     Tentunya implementasi DashMap pada `SubscriberRepository` sangat diperlukan karena struktur penyimpanan datanya yang cukup kompleks. Adapun pada `ProductRepository`, implementansi DashMap dapat digantikan oleh Vec. Namun tentunya, terdapat _cost performance_ yang lebih besar ketika melakukan operasi pada elemen spesifik tertentu.
 
-3. <h5> DashMap or Singleton Pattern ? </h5>
+3. #####  DashMap or Singleton Pattern ? 
     > When programming using Rust, we are enforced by rigorous compiler constraints to make a thread-safe program. In the case of the List of Subscribers (SUBSCRIBERS) static variable, we used the DashMap external library for thread safe HashMap. Explain based on your understanding of design patterns, do we still need DashMap or we can implement Singleton pattern instead?
 
     _Singleton pattern_ dan penggunaan DashMap dalam proyek ini memiliki tujuan yang berbeda yang tidak _mutually exclusive_.
@@ -123,19 +123,21 @@ This is the place for you to write reflections:
     Dengan kata lain, keduanya dibutuhkan dalam konteks ini.
 
 #### Reflection Publisher-2
-1. <h5>Service and Repository Separation in Model MVC</h5>
+1. ##### Service and Repository Separation in Model MVC
     > In the Model-View Controller (MVC) compound pattern, there is no “Service” and “Repository”. Model in MVC covers both data storage and business logic. Explain based on your understanding of design principles, why we need to separate “Service” and “Repository” from a Model?
+    
     Pemisahan Service dan Repository dilakukan untuk memenuhi **Single Responsibility Princple**. Pada struktur MVC yang asli, Model layer mengetahui semua hal yang berkaitan dengan data, mulai dari _business logic_, validasi, data itu sendiri, hingga operasi akses/penyimpanan data. Di sini, service bertugas untuk meng-handle _business logic_ dan input dari layer lain (Controller). Repository berperan dalam penyimpanan dan pengaksesan data. Model itu sendiri bertanggung jawab sebagai representasi atau struktur dari data. Hal ini memudahkan konversi Model ke dalam bentuk SQL atau sebaliknya karena tidak perlu membebani class dengan method method yang tidak relevan.
 
-2. <h5>Use Model only ?</h5>
+2. ##### Use Model only ?
     > What happens if we only use the Model? Explain your imagination on how the interactions between each model (Program, Subscriber, Notification) affect the code complexity for each model?
+
     Jika dalam aplikasi kita hanya menggunakan Model layer saja, bisa dibayangkan bertapa kompleksnya class model tersebut. Setidaknya class model tersebut harus menangani pemrosesan komunikasi HTTP, _business logic_, operasi penyimpanan & pengaksesan data, dan menyimpan struktur model itu sendiri.
 
     Pada kasus ini, terdapat dua class model : Subscriber dan Notification. Program adalah mesin kita saat ini sehingga tidak perlu dimodelkan. Masing-masing class Subscriber dan Notification harus menangani komunikasi HTTP, _business logic_, operasi penyimpanan & pengaksesan data. Interaksinya dimulai dengan masuknya request HTTP untuk subscribe dari program lain. HTTP request ini akan ditangani oleh class Notification. Class notification membuat instance class Subscriber berdasarkan data dari HTTP request, kemudian disimpan dalam suatu struktur data. Ketika ada state produk yang berubah, Program memberikan notifikasi kepada Subscriber dengan komunikasi via HTTP. Ketika ada request HTTP untuk melakukan unsubscribe, program akan menghapus Subscriber dari struktur penyimpanan.
 
     Tentunya skenarion di atas terlalu kompleks untuk dilakukan pada masing Model. Hal ini juga melanggar **_Single Responsibility Principle_** karena model menangani banyak tugas.
 
-3. <h5>Postman</h5>
+3. ##### Postman
     >Have you explored more about Postman? Tell us how this tool helps you to test your current work. You might want to also list which features in Postman you are interested in or feel like it is helpful to help your Group Project or any of your future software engineering projects.
 
     Postman sangat membantu dalam pengujian API dalam proyek aplikasi. Ada beberapa fitur yang mungkin dapat membantu mengoptimalkan pengerjaan Tugas Akhir Kelompok ataupun proyek lainnya. 
@@ -147,18 +149,21 @@ This is the place for you to write reflections:
         Digunakan untuk mensimulasikan API endpoint API response tanpa perlu menyiapkan server secara manual 
 
 #### Reflection Publisher-3
-1. <h5>Observer Pattern Variation</h5>
+1. ##### Observer Pattern Variation
     > Observer Pattern has two variations: Push model (publisher pushes data to subscribers) and Pull model (subscribers pull data from publisher). In this tutorial case, which variation of Observer Pattern that we use?
+
     Pada tutorial ini, kita menggunakan variasi **Push model observer pattern**. Di sini, kita menyetel program ini sebagai Publisher. Program menyimpan data terkait dengan Subscriber yang tertarik pada topik tertentu. Setiap ada perubahan state pada topik, program berkomunikasi dengan Subscriber-Subscriber tersebut melalui HTTP call. Jadi, program sebagai Publisher secara aktif mem-push data kepada Subscriber.
 
-2. <h5>Push Model Observer Pattern Pros & Cons</h5>
+2. ##### Push Model Observer Pattern Pros & Cons
     > What are the advantages and disadvantages of using the other variation of Observer Pattern for this tutorial case? (example: if you answer Q1 with Push, then imagine if we used Pull)
+
     Kelebihan push model adalah pengiriman data secara _realtime_. Hal ini karena ketika terjadi perubahan state pada suatu topik, notifikasi langsung di-_broadcast_ kepada para subscriber. Berbeda dengan pull model yang mengandalkan request dari subscriber sehingga komunikasinya tergantung pada waktu proses request.
 
     Namun, proses _broadcast_ notifikasi pada push model juga dapat menjadi sebuah bottleneck dalam aplikasi. Ketika Publisher perlu melakukan _broadcast_ ke banyak sekali Subscriber (misalnya jutaan), ini dapat membebani server Publisher. Sebaliknya, pada pull model, proses komunikasi tidak dibebankan pada Publisher, melainkan pada Subscriber. Subscriber dapat menentukan kapan komunikasi dengan Publiser dilakukan. Idealnya, Subscriber melakukan request hanya pada saat dibutuhkan saja (on demand request). Jika tidak, Subscriber dapat melakukan request pada interval waktu tertentu.
 
     Dari sisi keamanan, keduanya sama-sama memiliki trade-off. Pada push model, Publisher perlu mengetahui identitas dari Subscriber. Sebaliknya, pada pull model, Subscriber perlu mengetahui identitas Publisher. Masalah keamanan ini perlu dipertimbangkan sesuai dengan kebijakan dari masing-masing pembuat aplikasi.
 
-3. <h5>Not Using Multi-Threading in Notification?</h5>
+3. ##### Not Using Multi-Threading in Notification?
     >Explain what will happen to the program if we decide to not use multi-threading in the notification process.
+
     Seperti yang dijelaskan pada jawaban sebelumnya, _push model observer pattern_ yang kita implementasikan dapat membebani server Publisher dengan mengirimkan notifikasi ke banyak Subcsriber. Jika proses pengiriman notifikasi dilakukan tanpa concurrency, masing-masing notifikasi akan dikirimkan secara berurutan dan membuat program berhenti menerima request lainnya. Hal ini karena satu-satunya _thread_ yang dapat digunakan, digunakan untuk melakukan proses pengiriman notifikasi. 
