@@ -70,11 +70,11 @@ You can install Postman via this website: https://www.postman.com/downloads/
     -   [x] Commit: `Implement unsubscribe function in Notification controller.`
     -   [x] Write answers of your learning module's "Reflection Publisher-2" questions in this README.
 -   **STAGE 3: Implement notification mechanism**
-    -   [ ] Commit: `Implement update method in Subscriber model to send notification HTTP requests.`
-    -   [ ] Commit: `Implement notify function in Notification service to notify each Subscriber.`
-    -   [ ] Commit: `Implement publish function in Program service and Program controller.`
-    -   [ ] Commit: `Edit Product service methods to call notify after create/delete.`
-    -   [ ] Write answers of your learning module's "Reflection Publisher-3" questions in this README.
+    -   [x] Commit: `Implement update method in Subscriber model to send notification HTTP requests.`
+    -   [x] Commit: `Implement notify function in Notification service to notify each Subscriber.`
+    -   [x] Commit: `Implement publish function in Program service and Program controller.`
+    -   [x] Commit: `Edit Product service methods to call notify after create/delete.`
+    -   [x] Write answers of your learning module's "Reflection Publisher-3" questions in this README.
 
 ## Your Reflections
 
@@ -147,3 +147,18 @@ This is the place for you to write reflections:
         Digunakan untuk mensimulasikan API endpoint API response tanpa perlu menyiapkan server secara manual 
 
 #### Reflection Publisher-3
+1. <h5>Observer Pattern Variation</h5>
+    > Observer Pattern has two variations: Push model (publisher pushes data to subscribers) and Pull model (subscribers pull data from publisher). In this tutorial case, which variation of Observer Pattern that we use?
+    Pada tutorial ini, kita menggunakan variasi **Push model observer pattern**. Di sini, kita menyetel program ini sebagai Publisher. Program menyimpan data terkait dengan Subscriber yang tertarik pada topik tertentu. Setiap ada perubahan state pada topik, program berkomunikasi dengan Subscriber-Subscriber tersebut melalui HTTP call. Jadi, program sebagai Publisher secara aktif mem-push data kepada Subscriber.
+
+2. <h5>Push Model Observer Pattern Pros & Cons</h5>
+    > What are the advantages and disadvantages of using the other variation of Observer Pattern for this tutorial case? (example: if you answer Q1 with Push, then imagine if we used Pull)
+    Kelebihan push model adalah pengiriman data secara _realtime_. Hal ini karena ketika terjadi perubahan state pada suatu topik, notifikasi langsung di-_broadcast_ kepada para subscriber. Berbeda dengan pull model yang mengandalkan request dari subscriber sehingga komunikasinya tergantung pada waktu proses request.
+
+    Namun, proses _broadcast_ notifikasi pada push model juga dapat menjadi sebuah bottleneck dalam aplikasi. Ketika Publisher perlu melakukan _broadcast_ ke banyak sekali Subscriber (misalnya jutaan), ini dapat membebani server Publisher. Sebaliknya, pada pull model, proses komunikasi tidak dibebankan pada Publisher, melainkan pada Subscriber. Subscriber dapat menentukan kapan komunikasi dengan Publiser dilakukan. Idealnya, Subscriber melakukan request hanya pada saat dibutuhkan saja (on demand request). Jika tidak, Subscriber dapat melakukan request pada interval waktu tertentu.
+
+    Dari sisi keamanan, keduanya sama-sama memiliki trade-off. Pada push model, Publisher perlu mengetahui identitas dari Subscriber. Sebaliknya, pada pull model, Subscriber perlu mengetahui identitas Publisher. Masalah keamanan ini perlu dipertimbangkan sesuai dengan kebijakan dari masing-masing pembuat aplikasi.
+
+3. <h5>Not Using Multi-Threading in Notification?</h5>
+    >Explain what will happen to the program if we decide to not use multi-threading in the notification process.
+    Seperti yang dijelaskan pada jawaban sebelumnya, _push model observer pattern_ yang kita implementasikan dapat membebani server Publisher dengan mengirimkan notifikasi ke banyak Subcsriber. Jika proses pengiriman notifikasi dilakukan tanpa concurrency, masing-masing notifikasi akan dikirimkan secara berurutan dan membuat program berhenti menerima request lainnya. Hal ini karena satu-satunya _thread_ yang dapat digunakan, digunakan untuk melakukan proses pengiriman notifikasi. 
