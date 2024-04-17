@@ -125,10 +125,12 @@ This is the place for you to write reflections:
 #### Reflection Publisher-2
 1. ##### Service and Repository Separation in Model MVC
     > In the Model-View Controller (MVC) compound pattern, there is no “Service” and “Repository”. Model in MVC covers both data storage and business logic. Explain based on your understanding of design principles, why we need to separate “Service” and “Repository” from a Model?
+    
     Pemisahan Service dan Repository dilakukan untuk memenuhi **Single Responsibility Princple**. Pada struktur MVC yang asli, Model layer mengetahui semua hal yang berkaitan dengan data, mulai dari _business logic_, validasi, data itu sendiri, hingga operasi akses/penyimpanan data. Di sini, service bertugas untuk meng-handle _business logic_ dan input dari layer lain (Controller). Repository berperan dalam penyimpanan dan pengaksesan data. Model itu sendiri bertanggung jawab sebagai representasi atau struktur dari data. Hal ini memudahkan konversi Model ke dalam bentuk SQL atau sebaliknya karena tidak perlu membebani class dengan method method yang tidak relevan.
 
 2. ##### Use Model only ?
     > What happens if we only use the Model? Explain your imagination on how the interactions between each model (Program, Subscriber, Notification) affect the code complexity for each model?
+
     Jika dalam aplikasi kita hanya menggunakan Model layer saja, bisa dibayangkan bertapa kompleksnya class model tersebut. Setidaknya class model tersebut harus menangani pemrosesan komunikasi HTTP, _business logic_, operasi penyimpanan & pengaksesan data, dan menyimpan struktur model itu sendiri.
 
     Pada kasus ini, terdapat dua class model : Subscriber dan Notification. Program adalah mesin kita saat ini sehingga tidak perlu dimodelkan. Masing-masing class Subscriber dan Notification harus menangani komunikasi HTTP, _business logic_, operasi penyimpanan & pengaksesan data. Interaksinya dimulai dengan masuknya request HTTP untuk subscribe dari program lain. HTTP request ini akan ditangani oleh class Notification. Class notification membuat instance class Subscriber berdasarkan data dari HTTP request, kemudian disimpan dalam suatu struktur data. Ketika ada state produk yang berubah, Program memberikan notifikasi kepada Subscriber dengan komunikasi via HTTP. Ketika ada request HTTP untuk melakukan unsubscribe, program akan menghapus Subscriber dari struktur penyimpanan.
@@ -149,10 +151,12 @@ This is the place for you to write reflections:
 #### Reflection Publisher-3
 1. ##### Observer Pattern Variation
     > Observer Pattern has two variations: Push model (publisher pushes data to subscribers) and Pull model (subscribers pull data from publisher). In this tutorial case, which variation of Observer Pattern that we use?
+
     Pada tutorial ini, kita menggunakan variasi **Push model observer pattern**. Di sini, kita menyetel program ini sebagai Publisher. Program menyimpan data terkait dengan Subscriber yang tertarik pada topik tertentu. Setiap ada perubahan state pada topik, program berkomunikasi dengan Subscriber-Subscriber tersebut melalui HTTP call. Jadi, program sebagai Publisher secara aktif mem-push data kepada Subscriber.
 
 2. ##### Push Model Observer Pattern Pros & Cons
     > What are the advantages and disadvantages of using the other variation of Observer Pattern for this tutorial case? (example: if you answer Q1 with Push, then imagine if we used Pull)
+
     Kelebihan push model adalah pengiriman data secara _realtime_. Hal ini karena ketika terjadi perubahan state pada suatu topik, notifikasi langsung di-_broadcast_ kepada para subscriber. Berbeda dengan pull model yang mengandalkan request dari subscriber sehingga komunikasinya tergantung pada waktu proses request.
 
     Namun, proses _broadcast_ notifikasi pada push model juga dapat menjadi sebuah bottleneck dalam aplikasi. Ketika Publisher perlu melakukan _broadcast_ ke banyak sekali Subscriber (misalnya jutaan), ini dapat membebani server Publisher. Sebaliknya, pada pull model, proses komunikasi tidak dibebankan pada Publisher, melainkan pada Subscriber. Subscriber dapat menentukan kapan komunikasi dengan Publiser dilakukan. Idealnya, Subscriber melakukan request hanya pada saat dibutuhkan saja (on demand request). Jika tidak, Subscriber dapat melakukan request pada interval waktu tertentu.
@@ -161,4 +165,5 @@ This is the place for you to write reflections:
 
 3. ##### Not Using Multi-Threading in Notification?
     >Explain what will happen to the program if we decide to not use multi-threading in the notification process.
+
     Seperti yang dijelaskan pada jawaban sebelumnya, _push model observer pattern_ yang kita implementasikan dapat membebani server Publisher dengan mengirimkan notifikasi ke banyak Subcsriber. Jika proses pengiriman notifikasi dilakukan tanpa concurrency, masing-masing notifikasi akan dikirimkan secara berurutan dan membuat program berhenti menerima request lainnya. Hal ini karena satu-satunya _thread_ yang dapat digunakan, digunakan untuk melakukan proses pengiriman notifikasi. 
